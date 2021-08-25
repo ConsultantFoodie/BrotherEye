@@ -23,8 +23,8 @@ function setCheck() {
 	var button = document.createElement("Button");
 	button.id = "MyButton";
 	button.innerHTML = "Title";
-	button.style = "top:0;right:0;position:absolute;z-index: 9999"
-	document.body.appendChild(button);
+	button.style = "top:0;right:0;position:absolute;z-index: 2"
+	document.querySelector("#ow3 > div.T4LgNb > div > div:nth-child(9) > div.crqnQb > div.rG0ybd.xPh1xb.P9KVBf > div.TqwH9c > div.SZfyod > div > div").appendChild(button);
 }
 
 function setUncheck() {
