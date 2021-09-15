@@ -10,7 +10,6 @@ export function setCheck() {
             element.setAttribute("class","WUFI9b qdulke");
         });
         if(!!!document.getElementById("MyPanel")){
-            // alert("Help");
             var panel = document.createElement("div");
             var heading = document.createElement("div");
 			var closeButton = document.createElement("div");
@@ -19,7 +18,7 @@ export function setCheck() {
             panel.appendChild(heading);
 			closeButton.setAttribute("class", "VUk8eb");
 			closeButton.innerHTML = '<div jsaction="JIbuQc:hR1TY;rcuQ6b:npT2md" jscontroller="AXYg3e"><span data-is-tooltip-wrapper="true"><button class="VfPpkd-Bz112c-LgbsSe yHy1rc eT1oJ IWtuld wBYOYb" jscontroller="soHxf" jsaction="click:cOuCgd; mousedown:UX7yZ; mouseup:lbsD7e; mouseenter:tfO1Yc; mouseleave:JywGue; touchstart:p6p2H; touchmove:FwuNnf; touchend:yfqBxc; touchcancel:JMtRjd; focus:AHmuwe; blur:O22p3e; contextmenu:mg9Pef" data-disable-idom="true" aria-label="Close" data-tooltip-enabled="true" data-tooltip-id="tt-c17"><div class="VfPpkd-Bz112c-Jh9lGc"></div><i class="google-material-icons VfPpkd-kBDsod" aria-hidden="true">close</i></button><div class="EY8ABd-OWXEXe-TAWMXe" role="tooltip" aria-hidden="true" id="tt-c17">Close</div></span></div>';
-			panel.appendChild(closeButton);
+			heading.appendChild(closeButton);
             panel.id = "MyPanel";
             panel.setAttribute("class", "WUFI9b");
             panel.setAttribute("data-tab-id","7");
@@ -34,24 +33,14 @@ export function setCheck() {
         }
     });
 	var mainDiv = document.createElement("div");
-	var mainSpan = document.createElement("span");
-	mainDiv.setAttribute("class","r6xAKc");
 	mainDiv.id = "MyDiv";
-	mainSpan.setAttribute("data-is-tooltip-wrapper", "true");
 	button.setAttribute("class", "VfPpkd-Bz112c-LgbsSe yHy1rc eT1oJ JsuyRc boDUxc");
 	button.setAttribute("jscontroller", "soHxf");
 	button.setAttribute("jsaction","click:cOuCgd; mousedown:UX7yZ; mouseup:lbsD7e; mouseenter:tfO1Yc; mouseleave:JywGue; touchstart:p6p2H; touchmove:FwuNnf; touchend:yfqBxc; touchcancel:JMtRjd; focus:AHmuwe; blur:O22p3e; contextmenu:mg9Pef");
-	button.setAttribute("jsname","A5il2e");
-	button.setAttribute("data-disable-idom","true");
 	button.setAttribute("aria-label","My Button");
-	button.setAttribute("data-tooltip-enabled","true");
-	button.setAttribute("data-tooltip-id","tt-c6");
 	button.setAttribute("data-panel-id","7");
-	button.setAttribute("aria-pressed","false");
-	button.setAttribute("data-id","o3HEdc");
-	button.innerHTML = "BTP";
-	mainSpan.appendChild(button);
-	mainDiv.appendChild(mainSpan);
+	button.innerHTML = "BE";
+	mainDiv.appendChild(button);
 	var panelButtons = document.getElementsByClassName("SGP0hd kunNie")[0];
 	panelButtons.insertBefore(mainDiv, panelButtons.childNodes[0]);
 }
