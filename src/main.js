@@ -1,4 +1,8 @@
 // import * as Helper from 'chart.js';
+// import { alertNew } from "./background.js";
+
+var myChart = null;
+var myChart2 = null;
 
 function createPanel() {
   var displayer = document.getElementsByClassName("R3Gmyc qwU8Me qdulke")[0];
@@ -19,12 +23,15 @@ function createPanel() {
     panel.setAttribute("jscontroller","dkJU2d");
     panel.setAttribute("jsaction","VOcP9c:QPhnyd;ntQuZe:EuYDs");
 
-    // var temp = document.createElement("canvas");
-    // temp.id = "MyChart";
-    // temp.setAttribute("width", "200");
-    // temp.setAttribute("height", "200");
-    // panel.append(temp);
-
+    var chartDiv = document.createElement("div");
+    chartDiv.id = "Charts";
+    var ctx = document.createElement("canvas");
+    ctx.id = "MyChart";
+    chartDiv.append(ctx);
+    var ctx2 = document.createElement("canvas");
+    ctx2.id = "MyChart2";
+    chartDiv.append(ctx2);
+    panel.append(chartDiv);
     displayer.insertBefore(panel, displayer.childNodes[0]);
 }
 
@@ -40,7 +47,79 @@ function viewPanel() {
   });
 
   document.getElementById("MyPanel").setAttribute("class", "WUFI9b");
-      
+  
+  ctx = document.getElementById("MyChart");
+  if(myChart){
+    myChart.destroy();
+  }
+  myChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+          labels: ['Green', 'Red'],
+          datasets: [{
+              label: 'Attentiveness',
+              data: [60, 40],
+              backgroundColor: [
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(255, 99, 132, 0.2)'
+              ],
+              borderColor: [
+                'rgba(75, 192, 192, 1)',
+                  'rgba(255, 99, 132, 1)'
+              ],
+              borderWidth: 1
+          }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false,
+          },
+          title: {
+            display: true,
+            text: 'Attentiveness'
+          }
+        }
+      }
+  });
+  ctx2 = document.getElementById("MyChart2");
+  if(myChart2){
+    myChart2.destroy();
+  }
+  myChart2 = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+        labels: ['Green', 'Red'],
+        datasets: [{
+            label: 'Engagement',
+            data: [80, 20],
+            backgroundColor: [
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(255, 99, 132, 0.2)'
+            ],
+            borderColor: [
+              'rgba(75, 192, 192, 1)',
+                'rgba(255, 99, 132, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: false,
+        },
+        title: {
+          display: true,
+          text: 'Engagement'
+        }
+      }
+    }
+});
+  
+  // alertNew();
 }
 
 // Options for the observer (which mutations to observe)
