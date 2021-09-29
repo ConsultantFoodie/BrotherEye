@@ -6,7 +6,7 @@
   "content_scripts": [{
       "matches": ["*://meet.google.com/*-*-*"],
       "css": ["src/charts.css"],
-      "js": ["src/main.js", "src/chart.js"]
+      "js": ["src/main.js", "src/chart.js", "src/doughnut.js", "src/tables.js"]
   }],
   "background": [{
     "service_worker": "background.js"
