@@ -1,25 +1,42 @@
-function appendTable(tableDiv){
-  var tableMain = document.createElement("table")
-    tableMain.id = "example-table"
+function addRow(table, vals, isHeader){
+  var row = document.createElement("tr");
+  if(isHeader){
+    for (const header of vals) {
+      addHeader(row, header);
+    }
+  }
+  else{
+    for (const data of vals){
+      addData(row, data);
+    }
+  }
+  table.append(row);
+}
 
-    var tabler0 = document.createElement("tr")
-    var tableh1 = document.createElement("th")
-    tableh1.innerText = "Col1"
-    var tableh2 = document.createElement("th")
-    tableh2.innerText = "Col2"
-    tabler0.append(tableh1)
-    tabler0.append(tableh2)
+function addHeader(row, val){
+  var header = document.createElement("th");
+  header.innerText = val;
+  row.append(header);
+}
 
-    var tabler1 = document.createElement("tr")
-    var tabled1 = document.createElement("td")
-    tabled1.innerText = "Data1"
-    var tabled2 = document.createElement("td")
-    tabled2.innerText = "Data2"
-    tabler1.append(tabled1)
-    tabler1.append(tabled2)
+function addData(row, val){
+  var data = document.createElement("td");
+  data.innerText = val;
+  row.append(data);
+}
 
-    tableMain.append(tabler0)
-    tableMain.append(tabler1)
 
-    tableDiv.append(tableMain)
+function appendTable(tableDiv, tableId, tableSchema){
+  var table = document.createElement("table");
+  table.className = "Tables";
+  table.id = tableId;
+
+  addRow(table, tableSchema.columns, true);
+
+  if(tableSchema.data){
+    for(const row of tableSchema.data){
+      addRow(table, row, false);
+    }
+  }
+  tableDiv.append(table);
 }

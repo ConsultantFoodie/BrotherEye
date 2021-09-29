@@ -5,7 +5,7 @@
   "manifest_version": 3,
   "content_scripts": [{
       "matches": ["*://meet.google.com/*-*-*"],
-      "css": ["src/charts.css"],
+      "css": ["src/style.css"],
       "js": ["src/main.js", "src/chart.js", "src/doughnut.js", "src/tables.js"]
   }],
   "background": [{

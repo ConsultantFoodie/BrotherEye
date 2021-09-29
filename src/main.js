@@ -27,10 +27,32 @@ function createPanel() {
     appendChart(chartDiv, "Value4");
     panel.append(chartDiv);
 
-    var tableDiv = document.createElement("div")
-    appendTable(tableDiv);
+    var tableDiv0 = document.createElement("div");
+    tableDiv0.className = "TableDiv";
+    var tableSchema0 = {
+      columns: ["Col0", "Col1", "Col2", "Col3"],
+      data: [["Val0", "Val1", "Val2", "Val3"]]
+    };
+    appendTable(tableDiv0, "Table1", tableSchema0);
+    panel.append(tableDiv0);
 
-    panel.append(tableDiv)
+    var tableDiv1 = document.createElement("div");
+    tableDiv1.className = "TableDiv";
+    var tableSchema1 = {
+      columns: ["Col0", "Col1", "Col2", "Col3"],
+      data: [
+        ["Val00", "Val01", "Val02", "Val03"],
+        ["Val10", "Val11", "Val12", "Val13"],
+        ["Val20", "Val21", "Val22", "Val23"],
+        ["Val30", "Val31", "Val32", "Val33"],
+        ["Val40", "Val41", "Val42", "Val43"],
+        ["Val50", "Val51", "Val52", "Val53"],
+        ["Val60", "Val61", "Val62", "Val63"]
+      ]
+    };
+    appendTable(tableDiv1, "Table2", tableSchema1);
+    panel.append(tableDiv1);
+
     displayer.insertBefore(panel, displayer.childNodes[0]);
 }
 
@@ -44,6 +66,18 @@ function viewPanel() {
   Array.from(oldPanel).forEach(element => {
       element.setAttribute("class","WUFI9b qdulke");
   });
+
+  // var videoDiv = document.getElementsByClassName("J0M6X")[0];
+  // if(videoDiv.style.right == "0px"){
+  //   videoDiv.style.right = "376px";
+  //   var videoPanel = document.getElementsByClassName("zWfAib")[0];
+  //   var oldVideoStyle = videoPanel.getAttribute("style").split(";")[0].split(" ");
+  //   newVideoStyle = [oldVideoStyle[0], oldVideoStyle[1], "392px", oldVideoStyle[3], oldVideoStyle[2]];
+  //   videoPanel.style = newVideoStyle.join(" ")+";";
+
+  //   var innerDiv = document.getElementsByClassName("p2hjYe")[0];
+  //   innerDiv.style.width = "405px";
+  // }
 
   document.getElementById("MyPanel").setAttribute("class", "WUFI9b");
   

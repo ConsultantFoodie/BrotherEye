@@ -56,7 +56,8 @@ function makeChart(chartId, dataGreen){
           legend: {
             display: false,
           }
-        }
+        },
+        events: []
       }
   });
 }
