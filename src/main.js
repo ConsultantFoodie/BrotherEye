@@ -67,18 +67,6 @@ function viewPanel() {
       element.setAttribute("class","WUFI9b qdulke");
   });
 
-  // var videoDiv = document.getElementsByClassName("J0M6X")[0];
-  // if(videoDiv.style.right == "0px"){
-  //   videoDiv.style.right = "376px";
-  //   var videoPanel = document.getElementsByClassName("zWfAib")[0];
-  //   var oldVideoStyle = videoPanel.getAttribute("style").split(";")[0].split(" ");
-  //   newVideoStyle = [oldVideoStyle[0], oldVideoStyle[1], "392px", oldVideoStyle[3], oldVideoStyle[2]];
-  //   videoPanel.style = newVideoStyle.join(" ")+";";
-
-  //   var innerDiv = document.getElementsByClassName("p2hjYe")[0];
-  //   innerDiv.style.width = "405px";
-  // }
-
   document.getElementById("MyPanel").setAttribute("class", "WUFI9b");
   
   makeChart("Attentiveness", 60);
@@ -111,6 +99,14 @@ const callback = function(mutationsList, observer) {
     targetNode.insertBefore(mainDiv, targetNode.childNodes[0]);
     createPanel();
     observer.disconnect();
+    
+    var port = chrome.runtime.connect({name: "knockknock"});
+    setTimeout(function(){
+      port.postMessage({request: "Send Value"});
+      port.onMessage.addListener(function(msg) {
+        makeChart(msg.id, msg.dataGreen);
+      });
+    }, 10000);
     return;
   }
 };

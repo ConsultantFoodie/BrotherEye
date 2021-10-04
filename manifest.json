@@ -8,9 +8,9 @@
       "css": ["src/style.css"],
       "js": ["src/main.js", "src/chart.js", "src/doughnut.js", "src/tables.js"]
   }],
-  "background": [{
-    "service_worker": "background.js"
-  }],
+  "background": {
+    "service_worker": "src/background.js"
+  },
   "action": {
     "default_icon": {
       "16": "/images/get_started16.png",
