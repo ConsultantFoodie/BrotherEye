@@ -1,4 +1,6 @@
 var myCharts = {};
+var id = null;
+var port = chrome.runtime.connect({name: "BrotherEye"});
 
 function createPanel() {
   var displayer = document.getElementsByClassName("R3Gmyc qwU8Me qdulke")[0];
@@ -56,6 +58,14 @@ function createPanel() {
     displayer.insertBefore(panel, displayer.childNodes[0]);
 }
 
+async function bgUpdate(){
+  window.setInterval(function(){
+    if(document.getElementById("MyPanel").offsetParent){
+      updatePanel();
+    }
+  }, 5000);
+}
+
 function viewPanel() {
   var displayer = document.getElementsByClassName("R3Gmyc qwU8Me qdulke")[0];
   if(!!displayer){
@@ -68,12 +78,22 @@ function viewPanel() {
   });
 
   document.getElementById("MyPanel").setAttribute("class", "WUFI9b");
-  
-  makeChart("Attentiveness", 60);
-  makeChart("Engagement", 80);
-  makeChart("Value3", 40);
-  makeChart("Value4", 50);
 
+  // makeChart("Attentiveness", 60);
+  // makeChart("Engagement", 80);
+  // makeChart("Value3", 40);
+  // makeChart("Value4", 50);
+
+}
+
+function updatePanel(){
+  console.log("Sending");
+  port.postMessage({request: "Send Value"});
+  port.onMessage.addListener(function(msg) {
+    Array.from(msg.doughnuts).forEach(element => {
+      makeChart(element.id, element.dataGreen);
+    });
+  });
 }
 
 // Options for the observer (which mutations to observe)
@@ -98,15 +118,9 @@ const callback = function(mutationsList, observer) {
 
     targetNode.insertBefore(mainDiv, targetNode.childNodes[0]);
     createPanel();
+    bgUpdate();
     observer.disconnect();
-    
-    var port = chrome.runtime.connect({name: "knockknock"});
-    setTimeout(function(){
-      port.postMessage({request: "Send Value"});
-      port.onMessage.addListener(function(msg) {
-        makeChart(msg.id, msg.dataGreen);
-      });
-    }, 10000);
+
     return;
   }
 };
