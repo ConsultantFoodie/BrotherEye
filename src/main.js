@@ -1,6 +1,7 @@
 var myCharts = {};
 var id = null;
 var port = chrome.runtime.connect({name: "BrotherEye"});
+var canvas = null;
 
 function createPanel() {
   var displayer = document.getElementsByClassName("R3Gmyc qwU8Me qdulke")[0];
@@ -59,11 +60,12 @@ function createPanel() {
 }
 
 async function bgUpdate(){
-  window.setInterval(function(){
-    if(document.getElementById("MyPanel").offsetParent){
-      updatePanel();
-    }
-  }, 5000);
+  // window.setInterval(function(){
+  //   if(document.getElementById("MyPanel").offsetParent){
+  //     updatePanel();
+  //   }
+  // }, 5000);
+  window.setInterval(updatePanel, 10000);
 }
 
 function viewPanel() {
@@ -87,13 +89,30 @@ function viewPanel() {
 }
 
 function updatePanel(){
+  let ctx = canvas.getContext('2d');
+  let video = document.getElementById("cam_input");
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  let data = canvas.toDataURL("image/png");
   console.log("Sending");
-  port.postMessage({request: "Send Value"});
-  port.onMessage.addListener(function(msg) {
-    Array.from(msg.doughnuts).forEach(element => {
-      makeChart(element.id, element.dataGreen);
+  port.postMessage({payload: data});
+  // port.onMessage.addListener(function(msg) {
+  //   Array.from(msg.doughnuts).forEach(element => {
+  //     makeChart(element.id, element.dataGreen);
+  //   });
+  // });
+  
+}
+
+function getInput(){
+  let video = document.getElementById("cam_input"); // video is the id of video tag
+    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+    .then(function(stream) {
+        video.srcObject = stream;
+        video.play();
+    })
+    .catch(function(err) {
+        console.log("An error occurred! " + err);
     });
-  });
 }
 
 // Options for the observer (which mutations to observe)
@@ -117,7 +136,15 @@ const callback = function(mutationsList, observer) {
     mainDiv.appendChild(button);
 
     targetNode.insertBefore(mainDiv, targetNode.childNodes[0]);
+    let vid = document.createElement("video");
+    vid.id = "cam_input";
+    vid.height="480";
+    vid.width="640";
+    document.body.append(vid);
+    canvas = document.createElement('canvas');
+    getInput();
     createPanel();
+    // updatePanel();
     bgUpdate();
     observer.disconnect();
 
