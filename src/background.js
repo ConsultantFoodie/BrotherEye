@@ -1,20 +1,36 @@
-let payload = null
+var presenceValue = 0;
+var lenPayload = 0;
+var payloadList = [];
+
 chrome.runtime.onConnect.addListener(function(port) {
   console.assert(port.name === "BrotherEye");
   port.onMessage.addListener(function(msg) {
-    // if (msg.request === "Send Value"){
-    //   console.log(msg.request);
-    //   port.postMessage({
-    //     doughnuts: [
-    //                   {id: "Attentiveness", dataGreen: Math.floor(Math.random() * 101)},
-    //                   {id: "Engagement", dataGreen: Math.floor(Math.random() * 101)},
-    //                   {id: "Value3", dataGreen: Math.floor(Math.random() * 101)},
-    //                   {id: "Value4", dataGreen: Math.floor(Math.random() * 101)},
-    //                 ]
-    //   });
-    // }
-    payload = msg.payload;
-    sendSnapshotToServer();
+    if(msg.open){
+      openConnection();
+    }
+    else{
+      if(msg.endFrame){
+        console.log("End Frame");
+        sendSnapshotToServer();
+        payloadList = [];
+        console.log("Presence: ", presenceValue);
+        console.log("Total: ", lenPayload);
+        port.postMessage({
+          doughnuts: [
+                        {id: "Attentiveness", dataGreen: Math.floor((presenceValue/lenPayload)*100)},
+                        // {id: "Engagement", dataGreen: Math.floor(Math.random() * 101)},
+                        // {id: "Value3", dataGreen: Math.floor(Math.random() * 101)},
+                        // {id: "Value4", dataGreen: Math.floor(Math.random() * 101)}
+                      ]
+        });
+        presenceValue = 0;
+        lenPayload = 0;
+      }
+      else{
+        console.log("Adding");
+        payloadList.push(msg.payload);
+      }
+    }
   });
 });
 
@@ -46,8 +62,9 @@ function onClose() {
 }
 
 function onMessage(event) {
-  console.log(event.data);
-  // routeMessage(event.data);
+  presenceValue += parseInt(event.data);
+  lenPayload += 1;
+  console.log("Received ", presenceValue, " ", lenPayload);
 }
 
 function onError(event) {
@@ -55,12 +72,13 @@ function onError(event) {
 }
 
 function sendSnapshotToServer() {
-  console.log(payload)
-    if (ws)
-        ws.send(payload);
-    else{
-      console.log("error")
+  if (ws){
+    for(let i=0;i<payloadList.length;i++){
+      console.log("Sending");
+      ws.send(payloadList[i]);
     }
+  }
+  else{
+    console.log("error")
+  }
 }
-
-openConnection();

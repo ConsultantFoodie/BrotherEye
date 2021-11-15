@@ -1,71 +1,79 @@
 var myCharts = {};
-var id = null;
 var port = chrome.runtime.connect({name: "BrotherEye"});
 var canvas = null;
+var captureTime = 5000 // in milliseconds
+const FPS = 5;
+var intervalId = 0;
+var startTime = null;
+var videoInterval = 15000;
+
+port.onMessage.addListener(function(msg) {
+  Array.from(msg.doughnuts).forEach(element => {
+    makeChart(element.id, element.dataGreen);
+  });
+});
 
 function createPanel() {
   var displayer = document.getElementsByClassName("R3Gmyc qwU8Me qdulke")[0];
 
   var panel = document.createElement("div");
-    var heading = document.createElement("div");
-    var closeButton = document.createElement("div");
-    heading.setAttribute("class", "CYZUZd");
-    heading.innerHTML = '<div class="J8vCN zHGix" role="heading" aria-level="2" tabindex="-1" jsname="rQC7Ie" id="c10">BrotherEye</div>';
-    panel.appendChild(heading);
-    closeButton.setAttribute("class", "VUk8eb");
-    closeButton.innerHTML = '<div jsaction="JIbuQc:hR1TY;rcuQ6b:npT2md" jscontroller="AXYg3e"><span data-is-tooltip-wrapper="true"><button class="VfPpkd-Bz112c-LgbsSe yHy1rc eT1oJ IWtuld wBYOYb" jscontroller="soHxf" jsaction="click:cOuCgd; mousedown:UX7yZ; mouseup:lbsD7e; mouseenter:tfO1Yc; mouseleave:JywGue; touchstart:p6p2H; touchmove:FwuNnf; touchend:yfqBxc; touchcancel:JMtRjd; focus:AHmuwe; blur:O22p3e; contextmenu:mg9Pef" data-disable-idom="true" aria-label="Close" data-tooltip-enabled="true" data-tooltip-id="tt-c17"><div class="VfPpkd-Bz112c-Jh9lGc"></div><i class="google-material-icons VfPpkd-kBDsod" aria-hidden="true">close</i></button><div class="EY8ABd-OWXEXe-TAWMXe" role="tooltip" aria-hidden="true" id="tt-c17">Close</div></span></div>';
-    heading.appendChild(closeButton);
-    panel.id = "MyPanel";
-    panel.setAttribute("class", "WUFI9b qdulke");
-    panel.setAttribute("data-tab-id","7");
-    panel.setAttribute("jsname", "b0t70b");
-    panel.setAttribute("jscontroller","dkJU2d");
-    panel.setAttribute("jsaction","VOcP9c:QPhnyd;ntQuZe:EuYDs");
+  var heading = document.createElement("div");
+  heading.setAttribute("class", "CYZUZd");
+  heading.innerHTML = '<div class="J8vCN zHGix" role="heading" aria-level="2" tabindex="-1" jsname="rQC7Ie" id="c10">BrotherEye</div>';
+  panel.appendChild(heading);
 
-    var chartDiv = document.createElement("div");
-    chartDiv.id = "Charts";
-    appendChart(chartDiv, "Attentiveness");
-    appendChart(chartDiv, "Engagement");
-    appendChart(chartDiv, "Value3");
-    appendChart(chartDiv, "Value4");
-    panel.append(chartDiv);
+  var closeButton = document.createElement("div");
+  closeButton.setAttribute("class", "VUk8eb");
+  closeButton.innerHTML = '<div jsaction="JIbuQc:hR1TY;rcuQ6b:npT2md" jscontroller="AXYg3e"><span data-is-tooltip-wrapper="true"><button class="VfPpkd-Bz112c-LgbsSe yHy1rc eT1oJ IWtuld wBYOYb" jscontroller="soHxf" jsaction="click:cOuCgd; mousedown:UX7yZ; mouseup:lbsD7e; mouseenter:tfO1Yc; mouseleave:JywGue; touchstart:p6p2H; touchmove:FwuNnf; touchend:yfqBxc; touchcancel:JMtRjd; focus:AHmuwe; blur:O22p3e; contextmenu:mg9Pef" data-disable-idom="true" aria-label="Close" data-tooltip-enabled="true" data-tooltip-id="tt-c17"><div class="VfPpkd-Bz112c-Jh9lGc"></div><i class="google-material-icons VfPpkd-kBDsod" aria-hidden="true">close</i></button><div class="EY8ABd-OWXEXe-TAWMXe" role="tooltip" aria-hidden="true" id="tt-c17">Close</div></span></div>';
+  heading.appendChild(closeButton);
 
-    var tableDiv0 = document.createElement("div");
-    tableDiv0.className = "TableDiv";
-    var tableSchema0 = {
-      columns: ["Col0", "Col1", "Col2", "Col3"],
-      data: [["Val0", "Val1", "Val2", "Val3"]]
-    };
-    appendTable(tableDiv0, "Table1", tableSchema0);
-    panel.append(tableDiv0);
+  panel.id = "MyPanel";
+  panel.setAttribute("class", "WUFI9b qdulke");
+  panel.setAttribute("data-tab-id","7");
+  panel.setAttribute("jsname", "b0t70b");
+  panel.setAttribute("jscontroller","dkJU2d");
+  panel.setAttribute("jsaction","VOcP9c:QPhnyd;ntQuZe:EuYDs");
 
-    var tableDiv1 = document.createElement("div");
-    tableDiv1.className = "TableDiv";
-    var tableSchema1 = {
-      columns: ["Col0", "Col1", "Col2", "Col3"],
-      data: [
-        ["Val00", "Val01", "Val02", "Val03"],
-        ["Val10", "Val11", "Val12", "Val13"],
-        ["Val20", "Val21", "Val22", "Val23"],
-        ["Val30", "Val31", "Val32", "Val33"],
-        ["Val40", "Val41", "Val42", "Val43"],
-        ["Val50", "Val51", "Val52", "Val53"],
-        ["Val60", "Val61", "Val62", "Val63"]
-      ]
-    };
-    appendTable(tableDiv1, "Table2", tableSchema1);
-    panel.append(tableDiv1);
+  var chartDiv = document.createElement("div");
+  chartDiv.id = "Charts";
+  appendChart(chartDiv, "Attentiveness");
+  appendChart(chartDiv, "Engagement");
+  appendChart(chartDiv, "Value3");
+  appendChart(chartDiv, "Value4");
+  panel.append(chartDiv);
 
-    displayer.insertBefore(panel, displayer.childNodes[0]);
+  var tableDiv0 = document.createElement("div");
+  tableDiv0.className = "TableDiv";
+  var tableSchema0 = {
+    columns: ["Col0", "Col1", "Col2", "Col3"],
+    data: [["Val0", "Val1", "Val2", "Val3"]]
+  };
+  appendTable(tableDiv0, "Table1", tableSchema0);
+  panel.append(tableDiv0);
+
+  var tableDiv1 = document.createElement("div");
+  tableDiv1.className = "TableDiv";
+  var tableSchema1 = {
+    columns: ["Col0", "Col1", "Col2", "Col3"],
+    data: [
+      ["Val00", "Val01", "Val02", "Val03"],
+      ["Val10", "Val11", "Val12", "Val13"],
+      ["Val20", "Val21", "Val22", "Val23"],
+      ["Val30", "Val31", "Val32", "Val33"],
+      ["Val40", "Val41", "Val42", "Val43"],
+      ["Val50", "Val51", "Val52", "Val53"],
+      ["Val60", "Val61", "Val62", "Val63"]
+    ]
+  };
+  appendTable(tableDiv1, "Table2", tableSchema1);
+  panel.append(tableDiv1);
+
+  displayer.insertBefore(panel, displayer.childNodes[0]);
 }
 
-async function bgUpdate(){
-  // window.setInterval(function(){
-  //   if(document.getElementById("MyPanel").offsetParent){
-  //     updatePanel();
-  //   }
-  // }, 5000);
-  window.setInterval(updatePanel, 10000);
+function bgUpdate(){
+  startTime = Date.now();
+  intervalId = window.setInterval(updatePanel, 1000/FPS);
 }
 
 function viewPanel() {
@@ -80,12 +88,6 @@ function viewPanel() {
   });
 
   document.getElementById("MyPanel").setAttribute("class", "WUFI9b");
-
-  // makeChart("Attentiveness", 60);
-  // makeChart("Engagement", 80);
-  // makeChart("Value3", 40);
-  // makeChart("Value4", 50);
-
 }
 
 function updatePanel(){
@@ -93,26 +95,27 @@ function updatePanel(){
   let video = document.getElementById("cam_input");
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   let data = canvas.toDataURL("image/png");
-  console.log("Sending");
-  port.postMessage({payload: data});
-  // port.onMessage.addListener(function(msg) {
-  //   Array.from(msg.doughnuts).forEach(element => {
-  //     makeChart(element.id, element.dataGreen);
-  //   });
-  // });
-  
+
+  port.postMessage({open: false, payload: data, endFrame:false});
+  console.log("Sent Frame");
+
+  if(intervalId!=0 && Date.now()-startTime > captureTime){
+    clearInterval(intervalId);
+    port.postMessage({open: false, payload: "END", endFrame:true});
+    intervalId = 0;
+  }
 }
 
 function getInput(){
   let video = document.getElementById("cam_input"); // video is the id of video tag
-    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-    .then(function(stream) {
-        video.srcObject = stream;
-        video.play();
-    })
-    .catch(function(err) {
-        console.log("An error occurred! " + err);
-    });
+  navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+  .then(function(stream) {
+      video.srcObject = stream;
+      video.play();
+  })
+  .catch(function(err) {
+      console.log("An error occurred! " + err);
+  });
 }
 
 // Options for the observer (which mutations to observe)
@@ -144,8 +147,9 @@ const callback = function(mutationsList, observer) {
     canvas = document.createElement('canvas');
     getInput();
     createPanel();
-    // updatePanel();
-    bgUpdate();
+
+    setInterval(bgUpdate, videoInterval);
+    port.postMessage({open: true, payload: videoInterval, endFrame:false});
     observer.disconnect();
 
     return;
