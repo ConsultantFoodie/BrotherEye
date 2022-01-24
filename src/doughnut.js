@@ -37,7 +37,7 @@ function makeChart(chartId, dataGreen){
       data: {
           labels: ['Green', 'Red'],
           datasets: [{
-              label: 'Attentiveness',
+              label: chartId,
               data: [dataGreen, 100-dataGreen],
               backgroundColor: [
                   'rgba(10, 200, 10, 0.5)',
