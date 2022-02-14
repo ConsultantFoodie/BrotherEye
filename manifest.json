@@ -11,6 +11,7 @@
   "background": {
     "service_worker": "src/background.js"
   },
+  "permissions": ["identity", "identity.email"],
   "action": {
     "default_icon": {
       "16": "/images/get_started16.png",

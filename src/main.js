@@ -10,13 +10,34 @@ var frameNum = 0;
 var typeUser = null;
 
 var Persons = ["Presentation Score", "Parth Rajiv Mall", "Sudhanshu Shankar", "Aditya Kumar Mundada"];
-chrome.runtime.onMessage.addListener(function(msg) {
-  Array.from(msg.doughnuts).forEach(element => {
-    if(element.dataGreen >= 0 && element.dataGreen <= 100){
-      console.log(element.id, " ", element.dataGreen);
-      makeChart(element.id, element.dataGreen);
+// chrome.runtime.onMessage.addListener(function(msg) {
+//   Array.from(msg.doughnuts).forEach(element => {
+//     if(element.dataGreen >= 0 && element.dataGreen <= 100){
+//       console.log(element.id, " ", element.dataGreen);
+//       makeChart(element.id, element.dataGreen);
+//     }
+//   });
+// });
+chrome.runtime.onConnect.addListener(function(port){
+  console.assert(port.name === "backToContent");
+  port.onMessage.addListener(function(msg, sender){
+    switch(msg.event){
+      case "Add new":
+        appendChart(document.getElementById("Charts"), msg.name);
+        break;
+      case "Update":
+        var chartId = null;
+        if(typeUser == "Host"){
+          chartId = msg.name;
+        }
+        else if(typeUser == "Audi"){
+          chartId = "You";
+        }
+        console.log(chartId, msg.dataGreen);
+        makeChart(chartId, msg.dataGreen);
+        break;
     }
-  });
+  })
 });
 
 var demoVals= [[
@@ -96,14 +117,14 @@ function createPanel() {
 
   var chartDiv = document.createElement("div");
   chartDiv.id = "Charts";
-  appendChart(chartDiv, Persons[0]);
-  appendChart(chartDiv, Persons[1]);
-  appendChart(chartDiv, Persons[2]);
-  appendChart(chartDiv, Persons[3]);
-  panel.append(chartDiv);
+  // appendChart(chartDiv, Persons[1]);
+  // appendChart(chartDiv, Persons[2]);
+  // appendChart(chartDiv, Persons[3]);
   
   if(typeUser==="Host"){
-
+    appendChart(chartDiv, "Presentation Score");
+    panel.append(chartDiv);
+    
     // var tableDiv0 = document.createElement("div");
     // tableDiv0.className = "TableDiv";
     // var tableSchema0 = {
@@ -112,26 +133,27 @@ function createPanel() {
     // };
     // appendTable(tableDiv0, "Table1", tableSchema0);
     // panel.append(tableDiv0);
-
+    
     var tableDiv1 = document.createElement("div");
     tableDiv1.className = "TableDiv";
     var tableSchema1 = {
       columns: ["Slide Number", "Presentation Score", "Aggregated Audience Score"]
       // data: [
-      //   ["Val00", "Val01", "Val02", "Val03"],
-      //   ["Val10", "Val11", "Val12", "Val13"],
-      //   ["Val20", "Val21", "Val22", "Val23"],
-      //   ["Val30", "Val31", "Val32", "Val33"],
-      //   ["Val40", "Val41", "Val42", "Val43"],
-      //   ["Val50", "Val51", "Val52", "Val53"],
-      //   ["Val60", "Val61", "Val62", "Val63"]
-      // ]
-    };
+        //   ["Val00", "Val01", "Val02", "Val03"],
+        //   ["Val10", "Val11", "Val12", "Val13"],
+        //   ["Val20", "Val21", "Val22", "Val23"],
+        //   ["Val30", "Val31", "Val32", "Val33"],
+        //   ["Val40", "Val41", "Val42", "Val43"],
+        //   ["Val50", "Val51", "Val52", "Val53"],
+        //   ["Val60", "Val61", "Val62", "Val63"]
+        // ]
+      };
     appendTable(tableDiv1, "Table2", tableSchema1);
     panel.append(tableDiv1);
   }
   else if(typeUser==="Audi"){
-    
+    appendChart(chartDiv, "You");
+    panel.append(chartDiv) 
   }
   displayer.insertBefore(panel, displayer.childNodes[0]);
 }
@@ -162,13 +184,13 @@ function updatePanel(){
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   let data = canvas.toDataURL("image/png");
   frameNum += 1;
-  port.postMessage({open: false, payload: data, endFrame:false});
+  port.postMessage({event: "process", payload: data, endFrame: false});
   
   if(intervalId!=0 && Date.now()-startTime > captureTime){
     console.log(frameNum);
     frameNum = 0;
     clearInterval(intervalId);
-    port.postMessage({open: false, payload: "END", endFrame:true});
+    port.postMessage({event: "process", payload: "END", endFrame: true});
     intervalId = 0;
   }
 }
@@ -215,8 +237,8 @@ const callback = function(mutationsList, observer) {
     
     // // setInterval(bgUpdate, videoInterval);
     // // port.postMessage({open: true, payload: videoInterval, endFrame:false});
-
-    setTimeout(callbackHost, 5000);
+    console.log(window.location.pathname)
+    setTimeout(callbackHost, 2000);
     observer.disconnect();
 
     return;
@@ -269,8 +291,10 @@ const callbackHost = function() {
 
   setInterval(bgUpdate, videoInterval);
   // setInterval(demoFunc, videoInterval);
-  port.postMessage({open: true, payload: videoInterval, endFrame:false});
-
-
-
+  // port.postMessage({open: true, payload: videoInterval, endFrame:false});
+  port.postMessage({
+    event: "init",
+    meetCode: window.location.pathname,
+    role: typeUser 
+  });
 }
