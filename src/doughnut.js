@@ -1,3 +1,5 @@
+const myCharts = {};
+
 function appendChart(chartDiv, chartText){
   var div = document.createElement("div");
   div.className = "indiChart";

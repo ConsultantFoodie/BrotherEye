@@ -1,23 +1,14 @@
-var myCharts = {};
-var port = chrome.runtime.connect({name: "BrotherEye"});
-var canvas = null;
-var captureTime = 5000 // in milliseconds
+const port = chrome.runtime.connect({name: "BrotherEye"});
+const captureTime = 5000 // in milliseconds
 const FPS = 10;
+const videoInterval = 15000;
+
+var canvas = null;
 var intervalId = 0;
 var startTime = null;
-var videoInterval = 15000;
 var frameNum = 0;
 var typeUser = null;
 
-var Persons = ["Presentation Score", "Parth Rajiv Mall", "Sudhanshu Shankar", "Aditya Kumar Mundada"];
-// chrome.runtime.onMessage.addListener(function(msg) {
-//   Array.from(msg.doughnuts).forEach(element => {
-//     if(element.dataGreen >= 0 && element.dataGreen <= 100){
-//       console.log(element.id, " ", element.dataGreen);
-//       makeChart(element.id, element.dataGreen);
-//     }
-//   });
-// });
 chrome.runtime.onConnect.addListener(function(port){
   console.assert(port.name === "backToContent");
   port.onMessage.addListener(function(msg, sender){
@@ -39,60 +30,6 @@ chrome.runtime.onConnect.addListener(function(port){
     }
   })
 });
-
-var demoVals= [[
-    {id:Persons[0], dataGreen: 87},
-    {id:Persons[1], dataGreen: 79},
-    {id:Persons[2], dataGreen: 65},
-    {id:Persons[3], dataGreen: 33},
-  ],
-  [
-    {id:Persons[0], dataGreen: 34},
-    {id:Persons[1], dataGreen: 28},
-    {id:Persons[2], dataGreen: 13},
-    {id:Persons[3], dataGreen: 25},
-  ],
-  [
-    {id:Persons[0], dataGreen: 75},
-    {id:Persons[1], dataGreen: 70},
-    {id:Persons[2], dataGreen: 63},
-    {id:Persons[3], dataGreen: 72},
-  ]
-];
-var demoCnt = 0;
-function demoFunc() {
-  // console.log(demoVals[demoCnt]);
-  if(demoCnt==3){
-    demoCnt = 0;
-    document.getElementById("Table2").remove();
-    tableDiv1 = document.getElementsByClassName("TableDiv")[0];
-    var tableSchema1 = {
-      columns: ["Slide Number", "Presentation Score", "Aggregated Audience Score"]
-      // data: [
-      //   ["Val00", "Val01", "Val02", "Val03"],
-      //   ["Val10", "Val11", "Val12", "Val13"],
-      //   ["Val20", "Val21", "Val22", "Val23"],
-      //   ["Val30", "Val31", "Val32", "Val33"],
-      //   ["Val40", "Val41", "Val42", "Val43"],
-      //   ["Val50", "Val51", "Val52", "Val53"],
-      //   ["Val60", "Val61", "Val62", "Val63"]
-      // ]
-    };
-    appendTable(tableDiv1, "Table2", tableSchema1);
-  }
-  for(let i=0;i<4;i++){
-    var element = demoVals[demoCnt][i];
-    makeChart(element.id, element.dataGreen);
-    // console.log(element.id, element.dataGreen);
-  }
-  if(demoCnt<1){
-    addRow(document.getElementById("Table2"), [2, demoVals[demoCnt][0].dataGreen, Math.round((demoVals[demoCnt][1].dataGreen+demoVals[demoCnt][2].dataGreen+demoVals[demoCnt][3].dataGreen)/3)], false);
-  }
-  else{
-    addRow(document.getElementById("Table2"), [3, demoVals[demoCnt][0].dataGreen, Math.round((demoVals[demoCnt][1].dataGreen+demoVals[demoCnt][2].dataGreen+demoVals[demoCnt][3].dataGreen)/3)], false);
-  }
-  demoCnt += 1;
-}
 
 function createPanel() {
   var displayer = document.getElementsByClassName("R3Gmyc qwU8Me qdulke")[0];
@@ -117,37 +54,17 @@ function createPanel() {
 
   var chartDiv = document.createElement("div");
   chartDiv.id = "Charts";
-  // appendChart(chartDiv, Persons[1]);
-  // appendChart(chartDiv, Persons[2]);
-  // appendChart(chartDiv, Persons[3]);
   
   if(typeUser==="Host"){
     appendChart(chartDiv, "Presentation Score");
     panel.append(chartDiv);
     
-    // var tableDiv0 = document.createElement("div");
-    // tableDiv0.className = "TableDiv";
-    // var tableSchema0 = {
-    //   columns: ["Col0", "Col1", "Col2", "Col3"],
-    //   data: [["Val0", "Val1", "Val2", "Val3"]]
-    // };
-    // appendTable(tableDiv0, "Table1", tableSchema0);
-    // panel.append(tableDiv0);
-    
     var tableDiv1 = document.createElement("div");
     tableDiv1.className = "TableDiv";
     var tableSchema1 = {
       columns: ["Slide Number", "Presentation Score", "Aggregated Audience Score"]
-      // data: [
-        //   ["Val00", "Val01", "Val02", "Val03"],
-        //   ["Val10", "Val11", "Val12", "Val13"],
-        //   ["Val20", "Val21", "Val22", "Val23"],
-        //   ["Val30", "Val31", "Val32", "Val33"],
-        //   ["Val40", "Val41", "Val42", "Val43"],
-        //   ["Val50", "Val51", "Val52", "Val53"],
-        //   ["Val60", "Val61", "Val62", "Val63"]
-        // ]
-      };
+    };
+
     appendTable(tableDiv1, "Table2", tableSchema1);
     panel.append(tableDiv1);
   }
@@ -211,36 +128,9 @@ function getInput(){
 const callback = function(mutationsList, observer) {
   const targetNode = document.getElementsByClassName("SGP0hd kunNie")[0];
   if (targetNode){
-    // var button = document.createElement("button");
-    // button.addEventListener("click", viewPanel);
-    // var mainDiv = document.createElement("div");
-    // mainDiv.id = "EngagementDiv";
-    // mainDiv.setAttribute("class", "r6xAKc");
-    // button.setAttribute("class", "VfPpkd-Bz112c-LgbsSe yHy1rc eT1oJ JsuyRc boDUxc");
-    // button.setAttribute("jscontroller", "soHxf");
-    // button.setAttribute("jsaction","click:cOuCgd; mousedown:UX7yZ; mouseup:lbsD7e; mouseenter:tfO1Yc; mouseleave:JywGue; touchstart:p6p2H; touchmove:FwuNnf; touchend:yfqBxc; touchcancel:JMtRjd; focus:AHmuwe; blur:O22p3e; contextmenu:mg9Pef");
-    // button.setAttribute("aria-label","Engagement Metrics");
-    // button.setAttribute("data-panel-id","7");
-    // button.innerHTML = "SE";
-    // mainDiv.appendChild(button);
-
-    // targetNode.insertBefore(mainDiv, targetNode.childNodes[0]);
-    // let vid = document.createElement("video");
-    // vid.id = "cam_input";
-    // vid.height="480";
-    // vid.width="640";
-    // document.body.append(vid);
-    // canvas = document.createElement('canvas');
-    // // getInput();
-    // // createPanel();
-
-    
-    // // setInterval(bgUpdate, videoInterval);
-    // // port.postMessage({open: true, payload: videoInterval, endFrame:false});
     console.log(window.location.pathname)
     setTimeout(callbackHost, 2000);
     observer.disconnect();
-
     return;
   }
 };
@@ -288,10 +178,8 @@ const callbackHost = function() {
   }
   getInput();
   createPanel();
-
   setInterval(bgUpdate, videoInterval);
-  // setInterval(demoFunc, videoInterval);
-  // port.postMessage({open: true, payload: videoInterval, endFrame:false});
+  
   port.postMessage({
     event: "init",
     meetCode: window.location.pathname,

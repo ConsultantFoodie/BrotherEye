@@ -98,17 +98,6 @@ function onMessage(msg) {
       });
       break;
   }
-  // presenceValue = parseInt(msg.data);
-  // console.log(presenceValue);
-  console.log(contentID);
-  // chrome.tabs.sendMessage(contentID, {
-  //     doughnuts: [
-  //                   {id: "Presentation Score", dataGreen: presenceValue},
-  //                   {id: "Parth Rajiv Mall", dataGreen: presenceValue},
-  //                   {id: "Sudhanshu Shankar", dataGreen: presenceValue},
-  //                   {id: "Aditya Kumar Mundada", dataGreen: presenceValue}
-  //                 ]
-  //   });
 }
 
 function sendSnapshotToServer() {
