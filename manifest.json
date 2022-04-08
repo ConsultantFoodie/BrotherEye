@@ -6,24 +6,10 @@
   "content_scripts": [{
       "matches": ["*://meet.google.com/*-*-*"],
       "css": ["src/style.css"],
-      "js": ["src/main.js", "src/chart.js", "src/doughnut.js", "src/tables.js"]
+      "js": ["src/elem.js", "src/websocket.js","src/chart.js", "src/doughnut.js", "src/tables.js", "src/main.js"]
   }],
   "background": {
     "service_worker": "src/background.js"
   },
-  "permissions": ["identity", "identity.email"],
-  "action": {
-    "default_icon": {
-      "16": "/images/get_started16.png",
-      "32": "/images/get_started32.png",
-      "48": "/images/get_started48.png",
-      "128": "/images/get_started128.png"
-    }
-  },
-  "icons": {
-    "16": "/images/get_started16.png",
-    "32": "/images/get_started32.png",
-    "48": "/images/get_started48.png",
-    "128": "/images/get_started128.png"
-  }
+  "permissions": ["identity", "identity.email"]
 }

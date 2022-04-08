@@ -1,28 +1,29 @@
 const myCharts = {};
 
-function appendChart(chartDiv, chartText){
+function appendChart(chartDiv, chartText, chartId){
   var div = document.createElement("div");
   div.className = "indiChart";
-
-  var chartLabel = document.createElement("text");
-  chartLabel.className = "chartTitle"
-  chartLabel.innerText = chartText;
-  div.append(chartLabel);
 
   var chartContainer = document.createElement("div");
   chartContainer.className = "chartContainer";
 
   var middleDiv = document.createElement("div");
-  middleDiv.className = "chartText " + chartText;
+  middleDiv.className = "chartText " + chartId;
   var middleText = document.createElement("text")
   middleDiv.append(middleText)
   chartContainer.append(middleDiv)
 
   var ctx = document.createElement("canvas");
-  ctx.id = chartText;
+  ctx.id = chartId;
   chartContainer.append(ctx);
-
-  div.append(chartContainer)
+  
+  var chartLabel = document.createElement("div");
+  chartLabel.className = "chartTitle";
+  chartLabel.innerText = chartText;
+  
+  div.append(chartContainer);
+  div.append(chartLabel);
+  
   chartDiv.append(div);
   myCharts[chartText] = null;
 }
