@@ -17,7 +17,7 @@ function closeConnection() {
 function openConnection() {
     closeConnection();
     // var url = "ws://localhost:8001/";
-    var url = "wss://4cf6-203-110-242-40.ngrok.io";
+    var url = "wss://15e3-203-110-242-40.ngrok.io";
     console.log("Attempting connection");
     ws = new WebSocket(url);
     ws.onopen = onOpen;
@@ -58,6 +58,9 @@ function onMessage(msg) {
             table = document.getElementById("Table1");
             addRow(table, [reply.time, reply.score, reply.aggregate], false);
             break;
+        case "Stop Frames":
+            stopFlag = true;
+            break;
     }
 }
 
@@ -69,6 +72,16 @@ function sendRequestToServer(){
         console.log("error sending request to server");
     }
 }
+
+function sendContentToServer(img) {
+    if (ws){
+        ws.send(JSON.stringify(JsonObj("content", img, false)));
+    }
+    else{
+        console.log("error");
+    }
+}
+
 
 function sendSnapshotToServer(img, endFrame) {
     if (ws){

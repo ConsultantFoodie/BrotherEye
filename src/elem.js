@@ -20,7 +20,8 @@ function addButtonCanvas(){
   vid.height="480";
   vid.width="640";
   document.body.append(vid);
-  canvas = document.createElement('canvas');
+  faceCanvas = document.createElement('canvas');
+  presentationCanvas = document.createElement('canvas');
 }
 
 function createPanel(){
@@ -71,12 +72,12 @@ function createPanel(){
   if(typeUser==="Host"){
     controlDiv.innerHTML = `
       <h3 class="heading">Control Panel</h3>
-      <text>Auto</text>
+      <text>Off</text>
       <label class="switch">
         <input type="checkbox" id="controlSwitch">
         <span class="slider round"></span>
       </label>
-      <text>Manual</text>
+      <text>On</text>
     `;
     appendChart(chartDiv, "Presentation Score", initMsg.uid);
     metricsDiv.append(chartDiv);
@@ -123,14 +124,14 @@ function manualControls(){
   controlDiv.append(manualDiv);
 }
 
-function autoControls(){
-  var controlDiv = document.getElementsByClassName("control")[0];
-  var autoDiv = document.createElement("div");
-  autoDiv.setAttribute("id", "autoControls");
-  autoDiv.innerHTML = `
-    <text>Capture video every </text>
-    <input type="number" min="15" placeholder="15" id="vidInt" name="vidInt">
-    <text>seconds.</text>
-  `;
-  controlDiv.append(autoDiv);
-}
+// function autoControls(){
+//   var controlDiv = document.getElementsByClassName("control")[0];
+//   var autoDiv = document.createElement("div");
+//   autoDiv.setAttribute("id", "autoControls");
+//   autoDiv.innerHTML = `
+//     <text>Capture video every </text>
+//     <input type="number" min="15" placeholder="15" id="vidInt" name="vidInt">
+//     <text>seconds.</text>
+//   `;
+//   controlDiv.append(autoDiv);
+// }
