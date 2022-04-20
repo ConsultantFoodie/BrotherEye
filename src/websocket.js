@@ -1,11 +1,13 @@
-function JsonObj(eventType, data, end){
+function JsonObj(eventType, data, end, isVisible, manualFlag){
     return {
         event: eventType,
         meetCode: initMsg.meetCode,
         uid: initMsg.uid,
         role: initMsg.role,
         data: data,
-        end: end
+        end: end,
+        isVisible: isVisible,
+        manualFlag: manualFlag
     };
 }
 
@@ -17,7 +19,7 @@ function closeConnection() {
 function openConnection() {
     closeConnection();
     // var url = "ws://localhost:8001/";
-    var url = "wss://15e3-203-110-242-40.ngrok.io";
+    var url = "wss://studengage.herokuapp.com/";
     console.log("Attempting connection");
     ws = new WebSocket(url);
     ws.onopen = onOpen;
@@ -37,7 +39,7 @@ function onClose() {
 }
 
 function onError(event) {
-    console.log("Websocket error.");
+    console.log("Websocket error." + event);
 }
 
 function onMessage(msg) {
@@ -52,11 +54,13 @@ function onMessage(msg) {
             makeChart(reply.uid, parseInt(reply.presence));
             break;
         case "Request Frames":
+            manualFlag = reply.manualFlag;
             sendFrames();
             break;
         case "Add Row":
             table = document.getElementById("Table1");
-            addRow(table, [reply.time, reply.score, reply.aggregate], false);
+            var row = table.insertRow(1);
+            addRow(row, table, [(new Date()).toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"}), reply.score, reply.aggregate], false);
             break;
         case "Stop Frames":
             stopFlag = true;
@@ -66,28 +70,28 @@ function onMessage(msg) {
 
 function sendRequestToServer(){
     if(ws){
-        ws.send(JSON.stringify(JsonObj("request", "", false)));
+        ws.send(JSON.stringify(JsonObj("request", "", false, true, manualFlag)));
     }
     else{
-        console.log("error sending request to server");
+        console.log("Error in sendRequestToServer");
     }
 }
 
 function sendContentToServer(img) {
     if (ws){
-        ws.send(JSON.stringify(JsonObj("content", img, false)));
+        ws.send(JSON.stringify(JsonObj("content", img, false, true, false)));
     }
     else{
-        console.log("error");
+        console.log("Error in sendContentToServer");
     }
 }
 
 
-function sendSnapshotToServer(img, endFrame) {
+function sendSnapshotToServer(img, endFrame, isTabVisible) {
     if (ws){
-        ws.send(JSON.stringify(JsonObj("reply", img, endFrame)));
+        ws.send(JSON.stringify(JsonObj("reply", img, endFrame, isTabVisible, false)));
     }
     else{
-        console.log("error");
+        console.log("Error in sendSnapshotToServer");
     }
 }

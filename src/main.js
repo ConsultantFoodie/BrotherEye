@@ -1,8 +1,9 @@
 const captureTime = 60*1000 // in milliseconds
 const manualCaptureTime = 5*1000;
 const faceFPS = 30;
-const presentationFPS = 5;
+const presentationFPS = 15;
 
+var isTabVisible = true;
 var manualFlag = false;
 var stopFlag = false;
 var userName = null;
@@ -14,22 +15,38 @@ var intervalId = 0;
 var bgUpdateId = 0;
 var startTime = null;
 var frameNum = 0;
-var typeUser = null;
+var typeUser = "Audi";
+
+document.addEventListener("visibilitychange", function() {
+  if (document.visibilityState === 'visible') {
+    isTabVisible = true;
+  }
+  else{
+    if(typeUser == "Audi"){ //Only audience members need to be judged on whether they have the tab active
+      isTabVisible = false;
+    }
+  }
+});
 
 function getElementsByText(str, tag = 'a') {
   return Array.prototype.slice.call(document.getElementsByTagName(tag)).filter(el => el.innerText.trim().includes(str.trim()));
 }
 
 function sendContent(){
-  let video = getElementsByText("(Presentation)", "div")[0].nextElementSibling.nextElementSibling.children[0];
-  let ctx = presentationCanvas.getContext('2d');
-  presentationCanvas.width = video.offsetWidth;
-  presentationCanvas.height = video.offsetHeight;
+  if(getElementsByText("(Presentation)", "div")[0]){
+    let video = getElementsByText("(Presentation)", "div")[0].nextElementSibling.nextElementSibling.children[0];
+    let ctx = presentationCanvas.getContext('2d');
+    presentationCanvas.width = video.offsetWidth;
+    presentationCanvas.height = video.offsetHeight;
 
-  ctx.drawImage(video, 0, 0, screen.availWidth, screen.availWidth*(presentationCanvas.height/presentationCanvas.width), 0, 0, presentationCanvas.width, presentationCanvas.height);
-  let data = presentationCanvas.toDataURL("image/png");
-  // console.log(data);
-  sendContentToServer(data);
+    ctx.drawImage(video, 0, 0, screen.availWidth, screen.availWidth*(presentationCanvas.height/presentationCanvas.width), 0, 0, presentationCanvas.width, presentationCanvas.height);
+    let data = presentationCanvas.toDataURL("image/png");
+    // console.log(data);
+    sendContentToServer(data);
+  }
+  else{
+    presentationObserver.observe(document, config);
+  }
 }
 
 function sendFrames(){
@@ -45,13 +62,13 @@ function updatePanel(){
   ctx.drawImage(video, 0, 0, faceCanvas.width, faceCanvas.height);
   let data = faceCanvas.toDataURL("image/png");
   frameNum += 1;
-  sendSnapshotToServer(data, false);
+  sendSnapshotToServer(data, false, isTabVisible);
 
   if(intervalId!=0 && (stopFlag || (manualFlag && Date.now()-startTime > manualCaptureTime) || (Date.now()-startTime > captureTime))){
     console.log(frameNum);
     frameNum = 0;
     clearInterval(intervalId);
-    sendSnapshotToServer("END", true);
+    sendSnapshotToServer("END", true, true);
     if(manualFlag){
       manualFlag = false;
     }
@@ -91,13 +108,15 @@ const callback = function(mutationsList, observer) {
 };
 
 const presentationCallback = function(mutationsList, observer) {
-  const targetNode = getElementsByText("(Presentation)", "div")[0];
-  if (targetNode){
-    setTimeout(function(){
-      setInterval(sendContent, 1000/presentationFPS, targetNode.nextElementSibling.nextElementSibling.children[0]);
-    }, 5000);
-    observer.disconnect();
-    return;
+  if(typeUser == "Host"){
+    const targetNode = getElementsByText("(Presentation)", "div")[0];
+    if (targetNode){
+      setTimeout(function(){
+        setInterval(sendContent, 1000/presentationFPS, targetNode.nextElementSibling.nextElementSibling.children[0]);
+      }, 5000);
+      observer.disconnect();
+      return;
+    }
   }
 }
 
@@ -143,14 +162,10 @@ chrome.runtime.onMessage.addListener(
     console.log("initMsg", initMsg);
     createPanel();
     if(hostCheck){
-      // autoControls();
       let controlSwitch = document.getElementById("controlSwitch");
       controlSwitch.addEventListener("change", function(){
         if(this.checked){
           console.log("Manual On");
-          // clearInterval(bgUpdateId);
-          // var autoDiv = document.getElementById("autoControls");
-          // autoDiv.remove();
           manualControls();
           var manualSubmit = document.getElementById("manualMetrics");
           manualSubmit.addEventListener("click", function(){
@@ -160,27 +175,10 @@ chrome.runtime.onMessage.addListener(
         }
         else{
           console.log("Manual Off");
-          // bgUpdateId = setInterval(sendRequestToServer, videoInterval);
           var manualDiv = document.getElementById("manualControls");
           manualDiv.remove();
-          // autoControls();
-          // var vidIntField = document.getElementById("vidInt");
-          // vidIntField.addEventListener("keypress", function(e){
-          //   if(e.key==="Enter"){
-          //     this.blur();
-          //   }
-          // });
-          // vidIntField.addEventListener("blur", function(){
-          //   console.log(this.value);
-          //   if(parseInt(this.value)>0){
-          //     videoInterval = parseInt(this.value)*1000;
-          //     clearInterval(bgUpdateId);
-          //     bgUpdateId = setInterval(sendRequestToServer, videoInterval);
-          //   }
-          // });
         }
       });
-      // bgUpdateId = setInterval(sendRequestToServer, videoInterval);
     }
     openConnection();
     sendResponse({event:"Done"});

@@ -171,3 +171,7 @@ canvas {
     background-color: #045faa;
     color: white;
 }
+
+.Tables .dataRow {
+  white-space: nowrap;
+}

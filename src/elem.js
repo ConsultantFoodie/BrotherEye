@@ -71,7 +71,7 @@ function createPanel(){
   
   if(typeUser==="Host"){
     controlDiv.innerHTML = `
-      <h3 class="heading">Control Panel</h3>
+      <h3 class="heading">Control Manually</h3>
       <text>Off</text>
       <label class="switch">
         <input type="checkbox" id="controlSwitch">
@@ -123,15 +123,3 @@ function manualControls(){
   `;
   controlDiv.append(manualDiv);
 }
-
-// function autoControls(){
-//   var controlDiv = document.getElementsByClassName("control")[0];
-//   var autoDiv = document.createElement("div");
-//   autoDiv.setAttribute("id", "autoControls");
-//   autoDiv.innerHTML = `
-//     <text>Capture video every </text>
-//     <input type="number" min="15" placeholder="15" id="vidInt" name="vidInt">
-//     <text>seconds.</text>
-//   `;
-//   controlDiv.append(autoDiv);
-// }

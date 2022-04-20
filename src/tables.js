@@ -1,16 +1,20 @@
-function addRow(table, vals, isHeader){
-  var row = document.createElement("tr");
+function addRow(row, table, vals, isHeader){
+  console.log(row);
+  if(row === null){
+    var row = document.createElement("tr");
+  }
   if(isHeader){
     for (const header of vals) {
       addHeader(row, header);
     }
+    table.append(row);
   }
   else{
     for (const data of vals){
+      row.setAttribute("class", "dataRow");
       addData(row, data);
     }
   }
-  table.append(row);
 }
 
 function addHeader(row, val){
@@ -20,9 +24,8 @@ function addHeader(row, val){
 }
 
 function addData(row, val){
-  var data = document.createElement("td");
+  var data = row.insertCell(-1);
   data.innerText = val;
-  row.append(data);
 }
 
 
@@ -31,11 +34,11 @@ function appendTable(tableDiv, tableId, tableSchema){
   table.className = "Tables";
   table.id = tableId;
 
-  addRow(table, tableSchema.columns, true);
-
+  addRow(null, table, tableSchema.columns, true);
+  
   if(tableSchema.data){
-    for(const row of tableSchema.data){
-      addRow(table, row, false);
+    for(const rowData of tableSchema.data){
+      addRow(table.insertRow(-1), table, rowData, false);
     }
   }
   tableDiv.append(table);
