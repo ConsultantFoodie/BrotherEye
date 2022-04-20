@@ -1,4 +1,4 @@
-const captureTime = 60*1000 // in milliseconds
+const captureTime = 10*1000 // in milliseconds
 const manualCaptureTime = 5*1000;
 const faceFPS = 30;
 const presentationFPS = 15;
